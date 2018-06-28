@@ -48,3 +48,18 @@ perf <- performance(pred, "tpr", "fpr")
 plot(perf)
 
 
+# Random Forest
+library(randomForest)
+# To use for classification (instead of linear regression),
+# dependent variable must be a factor
+stevens_train$Reverse <- as.factor(stevens_train$Reverse)
+stevens_test$Reverse <- as.factor(stevens_test$Reverse)
+stevens_forest <- randomForest(Reverse ~ Circuit + Issue + Petitioner + 
+                                 Respondent + LowerCourt + Unconst,
+                               data=stevens_train, nodesize=25, ntree=200)
+stevens_forest_pred <- predict(stevens_forest, newdata=stevens_test)
+table(stevens$Reverse)
+table(stevens_forest_pred)
+table(stevens_test$Reverse, stevens_forest_pred)
+(43+76)/(40+37+19+74)
+# 0.7, slight improvement
