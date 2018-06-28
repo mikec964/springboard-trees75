@@ -6,23 +6,23 @@ str(stevens)
 library(caTools)
 set.seed(3000)
 split <- sample.split(stevens$Reverse, SplitRatio=0.7)  # create vector
-stevens.train <- subset(stevens, split == TRUE)         # apply vector
-stevens.test <- subset(stevens, split == FALSE)
+stevens_train <- subset(stevens, split == TRUE)         # apply vector
+stevens_test <- subset(stevens, split == FALSE)
 
 # build CART model
 library(rpart)  
 library(rpart.plot)
-stevens.tree <- rpart(Reverse ~ Circuit + Issue + Petitioner + 
+stevens_tree <- rpart(Reverse ~ Circuit + Issue + Petitioner + 
                         Respondent + LowerCourt + Unconst,
-                      data=stevens.train, method="class",
+                      data=stevens_train, method="class",
                       control=rpart.control(minbucket=25))
-prp(stevens.tree)
+prp(stevens_tree)
 # tree splits. Predict 0 means affirm, 1 means reverse
 # use table(Responde) to see list of values, unabbreviated
 
 # compare CART model predictions to actual
-stevens.cart <- predict(stevens.tree, newdata=stevens.test, type="class")
-table(stevens.test$Reverse, stevens.cart) # confusion matrix
+stevens_cart <- predict(stevens_tree, newdata=stevens_test, type="class")
+table(stevens_test$Reverse, stevens_cart) # confusion matrix
 (41+71)/(41+36+22+71) # accuracy
 # not shown: logistic regression would be 66.5% accuracy,
 # baseline (always predict reverse) would be 54.7%
