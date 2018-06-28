@@ -25,8 +25,8 @@ prp(stevens_cart)
 
 # compare CART model predictions to actual
 # type="class" limits to two options 0,1
-stevens_cart_pred <- predict(stevens_cart, newdata=stevens_test, type="class")
-table(stevens_test$Reverse, stevens_cart_pred) # confusion matrix
+pred_cart_stevens <- predict(stevens_cart, newdata=stevens_test, type="class")
+table(stevens_test$Reverse, pred_cart_stevens) # confusion matrix
 (41+71)/(41+36+22+71) # accuracy
 # not shown: logistic regression would be 66.5% accuracy,
 # baseline (always predict reverse) would be 54.7%
@@ -57,9 +57,7 @@ stevens_test$Reverse <- as.factor(stevens_test$Reverse)
 stevens_forest <- randomForest(Reverse ~ Circuit + Issue + Petitioner + 
                                  Respondent + LowerCourt + Unconst,
                                data=stevens_train, nodesize=25, ntree=200)
-stevens_forest_pred <- predict(stevens_forest, newdata=stevens_test)
-table(stevens$Reverse)
-table(stevens_forest_pred)
-table(stevens_test$Reverse, stevens_forest_pred)
+pred_forest_stevens <- predict(stevens_forest, newdata=stevens_test)
+table(stevens_test$Reverse, pred_forest_stevens)
 (43+76)/(40+37+19+74)
 # 0.7, slight improvement
