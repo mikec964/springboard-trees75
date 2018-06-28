@@ -28,3 +28,16 @@ table(stevens_test$Reverse, stevens_cart) # confusion matrix
 # baseline (always predict reverse) would be 54.7%
 # so... competitive with logistic, easier to interpret
 
+# Examine ROCR curve
+library(ROCR)
+stevens_rocr <- predict(stevens_tree, newdata=stevens_test)
+stevens_rocr
+# two columns for each test set observation
+# col0 is % of training set data in same subset as that same test set obser w/ outcome 0
+# col1 is % of training set data in the same subset as that test set obs w/ outcome 1
+# consider col1 as probability that that test set obs has outcome 1,
+# use for threshholding
+
+pred <- prediction(stevens_rocr[,2], stevens_test$Reverse)
+perf <- performance(pred, "tpr", "fpr")
+plot(perf)
