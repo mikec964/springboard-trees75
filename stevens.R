@@ -27,7 +27,7 @@ prp(stevens_cart)
 # type="class" limits to two options 0,1
 pred_cart_stevens <- predict(stevens_cart, newdata=stevens_test, type="class")
 table(stevens_test$Reverse, pred_cart_stevens) # confusion matrix
-(41+71)/(41+36+22+71) # accuracy
+(41+71)/(41+36+22+71) # 65.8% accuracy
 # not shown: logistic regression would be 66.5% accuracy,
 # baseline (always predict reverse) would be 54.7%
 # so... competitive with logistic, easier to interpret
@@ -61,3 +61,26 @@ pred_forest_stevens <- predict(stevens_forest, newdata=stevens_test)
 table(stevens_test$Reverse, pred_forest_stevens)
 (43+76)/(40+37+19+74)
 # 0.7, slight improvement
+
+
+# Use cross-validation of CART model
+library(caret)
+library(e1071)
+# Define number of folds
+fit_control <- trainControl(method="cv", number=10)
+cart_grid <- expand.grid(.cp=(1:50)*0.01)
+train(Reverse ~ Circuit + Issue + Petitioner + 
+        Respondent + LowerCourt + Unconst,
+      data=stevens_train, method="rpart", trControl=fit_control, 
+      tuneGrid=cart_grid)
+# Output is suggested cp, accuracy, and accuracy SD... suggests cp of 0.18
+
+# Create new CART value using cp instead of minbucket
+stevens_cart2 <- rpart(Reverse ~ Circuit + Issue + Petitioner + 
+                        Respondent + LowerCourt + Unconst,
+                      data=stevens_train, method="class",
+                      control=rpart.control(cp=0.18))
+pred_cart2_stevens <- predict(stevens_cart2, newdata=stevens_test, type="class")
+confusionMatrix(table(pred_cart2_stevens, stevens_test$Reverse))
+# 72.4% accuracy, improved over 65.8% CART and 70% random forest
+
